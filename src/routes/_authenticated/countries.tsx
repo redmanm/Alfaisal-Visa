@@ -27,7 +27,7 @@ import {
   type CountryRow,
   type AgencyRow,
 } from "@/lib/records";
-import { getStoredSession } from "@/integrations/supabase/client";
+import { getStoredSession } from "@/lib/neon-client";
 import { useI18n } from "@/lib/i18n";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

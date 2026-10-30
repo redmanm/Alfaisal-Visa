@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { History, Search, X } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { neonDb } from "@/lib/neon-client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
@@ -29,7 +29,7 @@ function AuditPage() {
   const { data = [], isLoading } = useQuery({
     queryKey: ["audit"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await neonDb
         .from("audit_log")
         .select("*")
         .order("created_at", { ascending: false })

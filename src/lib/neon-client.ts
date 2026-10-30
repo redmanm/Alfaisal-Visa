@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// Fan AlFaisal Recruitment - Neon PostgreSQL Client Adapter
-// Seamless drop-in replacement connecting UI components directly to Neon PostgreSQL via Server Functions.
+// Fan AlFaisal Recruitment - Direct Neon PostgreSQL Client & Authentication
+// Fully standalone client communicating directly with Neon PostgreSQL backend.
 
 import {
   getRecordsServerFn,
@@ -91,7 +91,7 @@ export function setStoredSession(session: AuthSession | null) {
   }
 }
 
-class NeonTableQueryBuilder<T = any> implements PromiseLike<{ data: T; error: any }> {
+export class NeonTableQueryBuilder<T = any> implements PromiseLike<{ data: T; error: any }> {
   private tableName: string;
   private operation: "select" | "insert" | "update" | "delete" = "select";
   private payload: any = null;
@@ -246,78 +246,84 @@ class NeonTableQueryBuilder<T = any> implements PromiseLike<{ data: T; error: an
   }
 }
 
-export const supabase = {
-  from: (table: string) => new NeonTableQueryBuilder(table),
+export const neonAuth = {
+  getSession: async () => {
+    const session = getStoredSession();
+    return { data: { session }, error: null };
+  },
 
-  auth: {
-    getSession: async () => {
-      const session = getStoredSession();
-      return { data: { session }, error: null };
-    },
+  getUser: async () => {
+    const session = getStoredSession();
+    return { data: { user: session?.user ?? null }, error: null };
+  },
 
-    getUser: async () => {
-      const session = getStoredSession();
-      return { data: { user: session?.user ?? null }, error: null };
-    },
-
-    signInWithPassword: async ({ email, password }: { email: string; password: string }) => {
-      const res = await authSignInServerFn({ data: { email, password } });
-      if (res.error || !res.session) {
-        return {
-          data: { user: null, session: null },
-          error: { message: res.error || "فشل تسجيل الدخول" },
-        };
-      }
-      setStoredSession(res.session as AuthSession);
-      notifyAuth("SIGNED_IN", res.session as AuthSession);
+  signInWithPassword: async ({ email, password }: { email: string; password: string }) => {
+    const res = await authSignInServerFn({ data: { email, password } });
+    if (res.error || !res.session) {
       return {
-        data: { user: res.user, session: res.session as AuthSession },
-        error: null,
+        data: { user: null, session: null },
+        error: { message: res.error || "فشل تسجيل الدخول" },
       };
-    },
+    }
+    setStoredSession(res.session as AuthSession);
+    notifyAuth("SIGNED_IN", res.session as AuthSession);
+    return {
+      data: { user: res.user, session: res.session as AuthSession },
+      error: null,
+    };
+  },
 
-    signUp: async ({
-      email,
-      password,
-      options,
-    }: {
-      email: string;
-      password: string;
-      options?: { data?: { full_name?: string } };
-    }) => {
-      const fullName = options?.data?.full_name;
-      const res = await authSignUpServerFn({ data: { email, password, fullName } });
-      if (res.error || !res.session) {
-        return {
-          data: { user: null, session: null },
-          error: { message: res.error || "فشل تسجيل الحساب" },
-        };
-      }
-      setStoredSession(res.session as AuthSession);
-      notifyAuth("SIGNED_IN", res.session as AuthSession);
+  signUp: async ({
+    email,
+    password,
+    options,
+  }: {
+    email: string;
+    password: string;
+    options?: { data?: { full_name?: string; role?: string } };
+  }) => {
+    const fullName = options?.data?.full_name;
+    const res = await authSignUpServerFn({ data: { email, password, fullName } });
+    if (res.error || !res.session) {
       return {
-        data: { user: res.user, session: res.session as AuthSession },
-        error: null,
+        data: { user: null, session: null },
+        error: { message: res.error || "فشل تسجيل الحساب" },
       };
-    },
+    }
+    setStoredSession(res.session as AuthSession);
+    notifyAuth("SIGNED_IN", res.session as AuthSession);
+    return {
+      data: { user: res.user, session: res.session as AuthSession },
+      error: null,
+    };
+  },
 
-    signOut: async () => {
-      setStoredSession(null);
-      notifyAuth("SIGNED_OUT", null);
-      return { error: null };
-    },
+  signOut: async () => {
+    setStoredSession(null);
+    notifyAuth("SIGNED_OUT", null);
+    return { error: null };
+  },
 
-    onAuthStateChange: (listener: AuthListener) => {
-      authListeners.add(listener);
-      return {
-        data: {
-          subscription: {
-            unsubscribe: () => {
-              authListeners.delete(listener);
-            },
+  onAuthStateChange: (listener: AuthListener) => {
+    authListeners.add(listener);
+    return {
+      data: {
+        subscription: {
+          unsubscribe: () => {
+            authListeners.delete(listener);
           },
         },
-      };
-    },
+      },
+    };
   },
-} as any;
+};
+
+export const neonDb = {
+  from: (table: string) => new NeonTableQueryBuilder(table),
+  auth: neonAuth,
+};
+
+// Aliases for intuitive use
+export const auth = neonAuth;
+export const db = neonDb;
+export default neonDb;

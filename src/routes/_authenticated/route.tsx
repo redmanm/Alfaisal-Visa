@@ -20,7 +20,7 @@ import {
   PanelRightClose,
   PanelRightOpen,
 } from "lucide-react";
-import { supabase, getStoredSession, type AuthSession } from "@/integrations/supabase/client";
+import { neonAuth, getStoredSession, type AuthSession } from "@/lib/neon-client";
 import { type AppRole, normalizeRole, isSuperAdmin, isAdmin } from "@/lib/records";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
@@ -57,7 +57,7 @@ export const Route = createFileRoute("/_authenticated")({
       };
     }
 
-    const { data } = await supabase.auth.getUser();
+    const { data } = await neonAuth.getUser();
     if (!data?.user) {
       return {
         user: null as unknown as SessionUser,
@@ -125,7 +125,7 @@ function Layout() {
       navigate({ to: "/auth", replace: true });
     }
 
-    const { data: authSub } = supabase.auth.onAuthStateChange((_event, newSession) => {
+    const { data: authSub } = neonAuth.onAuthStateChange((_event, newSession) => {
       setSession(newSession);
       if (!newSession?.user) {
         navigate({ to: "/auth", replace: true });
@@ -140,7 +140,7 @@ function Layout() {
   async function signOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
-    await supabase.auth.signOut();
+    await neonAuth.signOut();
     navigate({ to: "/auth", replace: true });
   }
 

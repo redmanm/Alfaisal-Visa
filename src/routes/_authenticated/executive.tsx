@@ -30,7 +30,7 @@ import {
   type ExecutiveAgencyMetric,
 } from "@/lib/server-api";
 import { isSuperAdmin, normalizeRole, type AppRole } from "@/lib/records";
-import { getStoredSession } from "@/integrations/supabase/client";
+import { getStoredSession } from "@/lib/neon-client";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

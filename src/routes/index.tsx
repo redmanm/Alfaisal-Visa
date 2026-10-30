@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { neonAuth } from "@/lib/neon-client";
 import { normalizeRole } from "@/lib/records";
 
 export const Route = createFileRoute("/")({
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const navigate = useNavigate();
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
+    neonAuth.getSession().then(({ data }) => {
       if (!data.session) {
         navigate({ to: "/auth", replace: true });
         return;

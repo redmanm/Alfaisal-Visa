@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { toast } from "sonner";
 import { Lock, Globe, Building2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { neonDb } from "@/lib/neon-client";
 import {
   Dialog,
   DialogContent,
@@ -94,7 +94,7 @@ export function RecordForm({
   // Load countries & agencies
   useEffect(() => {
     async function fetchCountries() {
-      const { data } = await supabase.from("countries").select("*");
+      const { data } = await neonDb.from("countries").select("*");
       if (data) {
         setCountries(data);
       }
@@ -173,11 +173,11 @@ export function RecordForm({
     }
     setSaving(true);
     const { error } = record
-      ? await supabase
+      ? await neonDb
           .from("records")
           .update(payload as never)
           .eq("id", record.id)
-      : await supabase.from("records").insert(payload as never);
+      : await neonDb.from("records").insert(payload as never);
     setSaving(false);
     if (error) {
       toast.error(error.message);

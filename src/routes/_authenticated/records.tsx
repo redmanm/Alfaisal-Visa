@@ -20,7 +20,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import { supabase, getStoredSession } from "@/integrations/supabase/client";
+import { neonDb, getStoredSession } from "@/lib/neon-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -141,7 +141,7 @@ function RecordsPage() {
   const { data = [], isLoading } = useQuery({
     queryKey: ["records"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data, error } = await neonDb
         .from("records")
         .select("*")
         .order("serial_no")
@@ -325,7 +325,7 @@ function RecordsPage() {
     if (!recordToDelete) return;
     setIsDeleting(true);
     try {
-      const { error } = await supabase.from("records").delete().eq("id", recordToDelete.id);
+      const { error } = await neonDb.from("records").delete().eq("id", recordToDelete.id);
       if (error) {
         toast.error(error.message);
         return;

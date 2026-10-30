@@ -16,7 +16,7 @@ import {
   Building2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { neonDb } from "@/lib/neon-client";
 import {
   Dialog,
   DialogContent,
@@ -76,7 +76,7 @@ export function RecordDetailDialog({
     queryKey: ["record-audit", record?.serial_no],
     queryFn: async () => {
       if (!record?.serial_no) return [];
-      const { data, error } = await supabase
+      const { data, error } = await neonDb
         .from("audit_log")
         .select("*")
         .eq("serial_no", record.serial_no)

@@ -2,7 +2,6 @@ import postgres from "postgres";
 
 const connStr =
   process.env.DATABASE_URL ||
-  process.env.LOVABLE_DB_MIGRATION_URL ||
   "postgresql://neondb_owner:npg_5qrz6cOCUsPI@ep-odd-wind-b4g8lja9-pooler.c-6.us-east-2.aws.neon.tech/neondb?sslmode=require";
 
 // Global singleton across hot reloads in dev

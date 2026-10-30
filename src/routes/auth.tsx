@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 import { ShieldCheck, Shield, User, Sparkles, Copy, Check, Languages } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
+import { neonAuth } from "@/lib/neon-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -116,8 +115,8 @@ function AuthPage() {
       navigate({ to: role === "SUPER_ADMIN" ? "/executive" : "/records", replace: true });
     };
 
-    supabase.auth.getSession().then(({ data }) => handleRedirect(data.session));
-    const { data } = supabase.auth.onAuthStateChange((_e, s) => handleRedirect(s));
+    neonAuth.getSession().then(({ data }) => handleRedirect(data.session));
+    const { data } = neonAuth.onAuthStateChange((_e, s) => handleRedirect(s));
     return () => data.subscription.unsubscribe();
   }, [navigate]);
 
@@ -131,13 +130,13 @@ function AuthPage() {
     setBusy(true);
     try {
       if (mode === "in") {
-        const { error } = await supabase.auth.signInWithPassword(parsed.data);
+        const { error } = await neonAuth.signInWithPassword(parsed.data);
         if (error) throw error;
         toast.success(t("auth_welcome_back"));
       } else {
-        const { data, error } = await supabase.auth.signUp({
+        const { data, error } = await neonAuth.signUp({
           ...parsed.data,
-          options: { emailRedirectTo: window.location.origin, data: { full_name: name.trim() } },
+          options: { data: { full_name: name.trim() } },
         });
         if (error) throw error;
         if (!data.session) {
@@ -161,7 +160,7 @@ function AuthPage() {
     setName(isAr ? account.name_ar : account.name_en);
     try {
       // First attempt sign-in
-      const { data: signInData, error: signInErr } = await supabase.auth.signInWithPassword({
+      const { data: signInData, error: signInErr } = await neonAuth.signInWithPassword({
         email: account.email,
         password: account.password,
       });
@@ -173,7 +172,7 @@ function AuthPage() {
       }
 
       // If user does not exist yet, create it automatically
-      const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
+      const { data: signUpData, error: signUpErr } = await neonAuth.signUp({
         email: account.email,
         password: account.password,
         options: {
@@ -191,7 +190,7 @@ function AuthPage() {
         navigate({ to: "/records", replace: true });
       } else {
         // Retry sign in
-        const retry = await supabase.auth.signInWithPassword({
+        const retry = await neonAuth.signInWithPassword({
           email: account.email,
           password: account.password,
         });
@@ -212,13 +211,6 @@ function AuthPage() {
     toast.success(`${t("copied")}: ${label}`);
     setTimeout(() => setCopiedKey(null), 1500);
   };
-
-  async function google() {
-    const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (error) toast.error(error.message);
-  }
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 relative bg-background">
@@ -447,16 +439,6 @@ function AuthPage() {
               disabled={busy}
             >
               {busy ? t("saving") : mode === "in" ? t("auth_sign_in_btn") : t("auth_sign_up_btn")}
-            </Button>
-
-            <div className="relative text-center text-xs text-muted-foreground">
-              <span className="bg-background px-2">
-                {isAr ? "أو المتابعة عبر" : "Or continue with"}
-              </span>
-            </div>
-
-            <Button type="button" variant="outline" className="w-full h-9 text-xs" onClick={google}>
-              {isAr ? "تسجيل الدخول عبر Google" : "Continue with Google"}
             </Button>
 
             <p className="text-center text-xs text-muted-foreground">

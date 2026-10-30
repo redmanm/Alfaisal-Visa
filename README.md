@@ -48,23 +48,17 @@ Here are the core requirements and specifications for the application:
 
 Please generate the complete codebase, including a responsive frontend UI (with a professional table layout and clean forms) and a backend database schema that supports these fields securely.
 
-This project was built with [Lovable](https://lovable.dev).
+## Database & Architecture
 
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/717abf19-c52b-417a-b4f6-d52f667345a1).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+The system runs on **Neon PostgreSQL** using Server Functions and Drizzle ORM.
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
+git clone https://github.com/redmanm/Alfaisal-Visa.git
+cd Alfaisal-Visa
 npm i
 npm run dev
 ```
