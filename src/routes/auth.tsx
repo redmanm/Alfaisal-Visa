@@ -163,7 +163,7 @@ function AuthPage() {
 
       {/* 1. Left Side: Centered Minimalist Login Card */}
       <div className="w-full lg:w-[48%] xl:w-[45%] min-h-screen flex flex-col justify-center items-center p-6 sm:p-10 z-10">
-        <div className="w-full max-w-[360px] sm:max-w-[380px] rounded-3xl bg-white p-8 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.06)] border border-white/60">
+        <div className="w-full max-w-[360px] sm:max-w-[380px] rounded-2xl sm:rounded-3xl bg-white/95 lg:bg-white backdrop-blur-md lg:backdrop-blur-none p-8 sm:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-white/60">
           {/* Fan AlFaisal Official Logo */}
           <div className="flex justify-center mb-1">
             <img
@@ -181,7 +181,7 @@ function AuthPage() {
           {/* Login Form */}
           <form onSubmit={submit} className="space-y-3.5">
             {/* Username Input Field */}
-            <div className="relative flex items-center rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-2xs transition-all focus-within:border-[#146C53] focus-within:ring-2 focus-within:ring-[#146C53]/20">
+            <div className="relative flex items-center rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-2xs transition-all focus-within:border-[#047857] focus-within:ring-2 focus-within:ring-[#047857]/20">
               <User className="size-4.5 text-slate-400 shrink-0 me-3" />
               <input
                 id="username"
@@ -197,7 +197,7 @@ function AuthPage() {
             </div>
 
             {/* Password Input Field */}
-            <div className="relative flex items-center rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-2xs transition-all focus-within:border-[#146C53] focus-within:ring-2 focus-within:ring-[#146C53]/20">
+            <div className="relative flex items-center rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-2xs transition-all focus-within:border-[#047857] focus-within:ring-2 focus-within:ring-[#047857]/20">
               <Lock className="size-4.5 text-slate-400 shrink-0 me-3" />
               <input
                 id="password"
@@ -216,7 +216,7 @@ function AuthPage() {
             <button
               type="submit"
               disabled={busy}
-              className="w-full rounded-xl bg-[#146C53] hover:bg-[#0f5742] active:bg-[#0b4232] text-white font-medium py-3 text-sm transition-all shadow-sm cursor-pointer flex items-center justify-center gap-2 mt-2"
+              className="w-full rounded-xl bg-[#047857] hover:bg-[#065F46] active:bg-[#034D38] text-white font-semibold py-3 text-sm transition-all shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center gap-2 mt-2"
             >
               {busy ? (
                 <div className="size-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -228,13 +228,15 @@ function AuthPage() {
         </div>
       </div>
 
-      {/* 2. Right Side: Full-Bleed Storefront & Van Banner */}
+      {/* 2. Right Side: Full-Bleed Storefront & Van Banner with Emerald Overlay */}
       <div className="hidden lg:block lg:w-[52%] xl:w-[55%] min-h-screen relative overflow-hidden bg-slate-900 select-none">
         <img
           src="/login-hero.jpg"
           alt="Fan AlFaisal Recruitment Company"
           className="absolute inset-0 h-full w-full object-cover object-center"
         />
+        {/* Subtle emerald-to-transparent overlay (#065F46 tint) */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-[#065F46]/20 via-transparent to-[#047857]/15 mix-blend-multiply pointer-events-none" />
       </div>
     </div>
   );
