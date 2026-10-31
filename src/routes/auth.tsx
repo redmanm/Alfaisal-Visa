@@ -389,16 +389,28 @@ function AuthPage() {
         </p>
       </div>
 
-      {/* 2. Right Side: Brand Imagery & Corporate Storefront Banner (~55-60% Desktop Width) */}
-      <div className="hidden lg:relative lg:flex lg:w-[55%] xl:w-[58%] min-h-screen overflow-hidden bg-slate-900 select-none">
+      {/* 2. Right Side: Exactly the provided photo */}
+      <div className="hidden lg:relative lg:flex lg:w-[55%] xl:w-[58%] min-h-screen items-center justify-center overflow-hidden bg-slate-950 select-none p-4 lg:p-6 xl:p-8">
+        {/* Ambient backdrop of the exact photo filling edge-to-edge */}
         <img
           src="/login-hero.jpg"
-          alt="Fan AlFaisal Recruitment Company Office and Van"
-          className="absolute inset-0 h-full w-full object-cover object-center"
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover object-center blur-2xl scale-125 opacity-35 pointer-events-none"
         />
-        {/* Subtle executive gradient overlay (emerald tint #065F46) keeping storefront & van clearly visible */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-[#064E3B]/35 via-transparent to-[#047857]/25 mix-blend-multiply pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/20 via-transparent to-transparent pointer-events-none" />
+
+        {/* Corporate emerald gradient overlay (#065F46 / emerald tint) */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-[#064E3B]/40 via-transparent to-[#047857]/25 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/30 via-transparent to-transparent pointer-events-none" />
+
+        {/* The exact photo prominently displayed: building sign at top to branded van at bottom */}
+        <div className="relative z-10 h-full max-h-[95vh] w-full flex items-center justify-center">
+          <img
+            src="/login-hero.jpg"
+            alt="Fan AlFaisal Recruitment Company Office and Van"
+            className="h-full w-auto max-w-full object-contain rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] border border-white/10"
+          />
+        </div>
       </div>
     </div>
   );
