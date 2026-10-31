@@ -178,7 +178,7 @@ function ExecutiveDashboardPage() {
     (val || 0).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 
   return (
-    <div className="space-y-5 p-2 sm:p-3 md:px-4 md:py-3 w-full max-w-none">
+    <div className="space-y-5 px-2 sm:px-4 md:px-6 py-3 sm:py-4 max-w-7xl mx-auto w-full">
       {/* ------------------------------------------------------------- */}
       {/* 1. Header & Super Admin Scoped Read-Only Notice Banner        */}
       {/* ------------------------------------------------------------- */}

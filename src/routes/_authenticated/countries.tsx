@@ -267,7 +267,7 @@ function CountriesPage() {
   }
 
   return (
-    <div className="space-y-5 p-2 sm:p-3 md:px-4 md:py-3 w-full max-w-none">
+    <div className="space-y-5 px-2 sm:px-4 md:px-6 py-3 sm:py-4 max-w-7xl mx-auto w-full">
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-4">
         <div>
@@ -414,10 +414,14 @@ function CountriesPage() {
 
       {/* Modal 1: Create Country (With Initial Agency) */}
       <Dialog open={createCountryOpen} onOpenChange={setCreateCountryOpen}>
-        <DialogContent className="w-[95vw] sm:max-w-md max-h-[92vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle>{t("new_country")}</DialogTitle>
-            <DialogDescription className="text-xs">{t("country_dialog_desc")}</DialogDescription>
+            <DialogTitle className="text-base sm:text-lg font-bold break-words text-wrap">
+              {t("new_country")}
+            </DialogTitle>
+            <DialogDescription className="text-xs break-words text-wrap leading-relaxed">
+              {t("country_dialog_desc")}
+            </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleCreateCountry} className="space-y-4 pt-2">
@@ -491,11 +495,20 @@ function CountriesPage() {
               </div>
             </div>
 
-            <DialogFooter className="gap-2 sm:justify-between">
-              <Button type="button" variant="outline" onClick={() => setCreateCountryOpen(false)}>
+            <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setCreateCountryOpen(false)}
+                className="w-full sm:w-auto h-10 sm:h-9 text-xs font-semibold cursor-pointer"
+              >
                 {t("cancel")}
               </Button>
-              <Button type="submit" disabled={submitting}>
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="w-full sm:w-auto h-10 sm:h-9 text-xs font-bold cursor-pointer"
+              >
                 {submitting ? t("saving") : t("new_country")}
               </Button>
             </DialogFooter>
@@ -505,10 +518,12 @@ function CountriesPage() {
 
       {/* Modal 2: Create Additional Agency */}
       <Dialog open={createAgencyOpen} onOpenChange={setCreateAgencyOpen}>
-        <DialogContent className="w-[95vw] sm:max-w-md max-h-[92vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle>{t("new_agency")}</DialogTitle>
-            <DialogDescription className="text-xs">
+            <DialogTitle className="text-base sm:text-lg font-bold break-words text-wrap">
+              {t("new_agency")}
+            </DialogTitle>
+            <DialogDescription className="text-xs break-words text-wrap leading-relaxed">
               {t("col_country")}: <strong>{targetCountry?.name}</strong>
             </DialogDescription>
           </DialogHeader>
@@ -556,11 +571,20 @@ function CountriesPage() {
               />
             </div>
 
-            <DialogFooter className="gap-2 pt-2 sm:justify-between">
-              <Button type="button" variant="outline" onClick={() => setCreateAgencyOpen(false)}>
+            <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setCreateAgencyOpen(false)}
+                className="w-full sm:w-auto h-10 sm:h-9 text-xs font-semibold cursor-pointer"
+              >
                 {t("cancel")}
               </Button>
-              <Button type="submit" disabled={submitting}>
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="w-full sm:w-auto h-10 sm:h-9 text-xs font-bold cursor-pointer"
+              >
                 {submitting ? t("saving") : t("new_agency")}
               </Button>
             </DialogFooter>

@@ -237,7 +237,7 @@ function UsersPage() {
   const staffCount = userList.filter((u) => u.role === "STAFF").length;
 
   return (
-    <div className="space-y-5 p-2 sm:p-3 md:px-4 md:py-3 w-full max-w-none">
+    <div className="space-y-5 px-2 sm:px-4 md:px-6 py-3 sm:py-4 max-w-7xl mx-auto w-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-4">
         <div>
@@ -556,10 +556,14 @@ function UsersPage() {
 
       {/* Modal 1: Create New Admin (Responsive) */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
-        <DialogContent className="w-[95vw] sm:max-w-md max-h-[92vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle>{t("user_dialog_title")}</DialogTitle>
-            <DialogDescription className="text-xs">{t("user_dialog_desc")}</DialogDescription>
+            <DialogTitle className="text-base sm:text-lg font-bold break-words text-wrap">
+              {t("user_dialog_title")}
+            </DialogTitle>
+            <DialogDescription className="text-xs break-words text-wrap leading-relaxed">
+              {t("user_dialog_desc")}
+            </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleCreateAdmin} className="space-y-4 pt-2">
@@ -648,11 +652,20 @@ function UsersPage() {
               </div>
             )}
 
-            <DialogFooter className="gap-2 pt-2 sm:justify-between">
-              <Button type="button" variant="outline" onClick={() => setCreateOpen(false)}>
+            <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setCreateOpen(false)}
+                className="w-full sm:w-auto h-10 sm:h-9 text-xs font-semibold cursor-pointer"
+              >
                 {t("cancel")}
               </Button>
-              <Button type="submit" disabled={submitting}>
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="w-full sm:w-auto h-10 sm:h-9 text-xs font-bold cursor-pointer"
+              >
                 {submitting ? t("saving") : t("new_admin")}
               </Button>
             </DialogFooter>
@@ -662,12 +675,17 @@ function UsersPage() {
 
       {/* Modal 2: Edit Country Access (Responsive) */}
       <Dialog open={editCountryOpen} onOpenChange={setEditCountryOpen}>
-        <DialogContent className="w-[95vw] sm:max-w-md max-h-[92vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-4 sm:p-6">
           <DialogHeader>
-            <DialogTitle>{t("edit_territory_title")}</DialogTitle>
-            <DialogDescription className="text-xs">
+            <DialogTitle className="text-base sm:text-lg font-bold break-words text-wrap">
+              {t("edit_territory_title")}
+            </DialogTitle>
+            <DialogDescription className="text-xs break-words text-wrap leading-relaxed">
               {t("edit_territory_desc")} (
-              <strong>{selectedAdmin?.full_name || selectedAdmin?.email}</strong>)
+              <strong className="break-all">
+                {selectedAdmin?.full_name || selectedAdmin?.email}
+              </strong>
+              )
             </DialogDescription>
           </DialogHeader>
 
@@ -715,11 +733,20 @@ function UsersPage() {
               </div>
             </div>
 
-            <DialogFooter className="gap-2 sm:justify-between">
-              <Button type="button" variant="outline" onClick={() => setEditCountryOpen(false)}>
+            <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setEditCountryOpen(false)}
+                className="w-full sm:w-auto h-10 sm:h-9 text-xs font-semibold cursor-pointer"
+              >
                 {t("cancel")}
               </Button>
-              <Button type="submit" disabled={submitting}>
+              <Button
+                type="submit"
+                disabled={submitting}
+                className="w-full sm:w-auto h-10 sm:h-9 text-xs font-bold cursor-pointer"
+              >
                 {submitting ? t("saving") : t("save")}
               </Button>
             </DialogFooter>

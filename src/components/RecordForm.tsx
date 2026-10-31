@@ -220,13 +220,13 @@ export function RecordForm({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-3xl">
+      <DialogContent className="w-[calc(100%-2rem)] sm:w-full sm:max-w-3xl max-h-[90vh] overflow-y-auto rounded-2xl p-4 sm:p-6">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="text-base sm:text-lg font-bold font-arabic break-words text-wrap">
             {record ? `${t("form_edit_title")} #${record.serial_no}` : t("form_new_title")}
           </DialogTitle>
           {record && (
-            <DialogDescription className="text-xs">
+            <DialogDescription className="text-xs break-words text-wrap leading-relaxed">
               {t("form_added_by")} {record.created_by_email ?? t("system_user")} ·{" "}
               {new Date(record.created_at).toLocaleString(isAr ? "ar-SA" : "en-US")}
               {record.updated_by_email &&
@@ -493,11 +493,20 @@ export function RecordForm({
             ),
           })}
 
-          <DialogFooter className="gap-2">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+          <DialogFooter className="flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-2 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              className="w-full sm:w-auto h-10 sm:h-9 text-xs font-semibold cursor-pointer"
+            >
               {t("form_cancel")}
             </Button>
-            <Button type="submit" disabled={saving}>
+            <Button
+              type="submit"
+              disabled={saving}
+              className="w-full sm:w-auto h-10 sm:h-9 text-xs font-bold cursor-pointer"
+            >
               {saving ? t("saving") : record ? t("form_submit_save") : t("form_submit_create")}
             </Button>
           </DialogFooter>

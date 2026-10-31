@@ -139,30 +139,33 @@ export function RecordDetailDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[92vh] overflow-y-auto sm:max-w-2xl">
+      <DialogContent className="w-[calc(100%-2rem)] sm:w-full sm:max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl p-4 sm:p-6">
         <DialogHeader className="border-b pb-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 pr-6">
-            <div className="flex items-center gap-2.5">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pr-6 rtl:pr-0 rtl:pl-6">
+            <div className="flex items-center gap-2.5 min-w-0">
               <img
                 src="/logo.png"
                 alt="Fan AlFaisal"
                 className="size-9 shrink-0 rounded-md bg-white object-contain p-0.5 border shadow-2xs"
               />
-              <span className="grid size-7 place-items-center rounded bg-primary/10 font-mono text-xs font-bold text-primary">
+              <span className="grid size-7 shrink-0 place-items-center rounded bg-primary/10 font-mono text-xs font-bold text-primary">
                 #{record.serial_no}
               </span>
-              <div>
-                <DialogTitle className="text-base font-semibold font-arabic" dir="auto">
+              <div className="min-w-0">
+                <DialogTitle
+                  className="text-base font-semibold font-arabic break-words text-wrap"
+                  dir="auto"
+                >
                   {record.sponsor_name}
                 </DialogTitle>
-                <DialogDescription className="text-xs">
+                <DialogDescription className="text-xs break-words text-wrap">
                   {record.worker_name
                     ? `${t("col_worker_name")}: ${record.worker_name}`
                     : t("no_worker_specified")}
                 </DialogDescription>
               </div>
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5 shrink-0">
               <StatusBadge value={record.payment_state} />
               <StatusBadge value={record.visa_status} paymentState={record.payment_state} />
               <StatusBadge value={record.medical} />
@@ -414,17 +417,17 @@ export function RecordDetailDialog({
         </Tabs>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t pt-3">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-2 border-t pt-3">
           <Button
             variant="outline"
             size="sm"
             onClick={() => printCaseSlip(record, lang)}
-            className="flex items-center gap-1.5"
+            className="flex items-center justify-center gap-1.5 w-full sm:w-auto h-10 sm:h-9 text-xs cursor-pointer"
           >
             <Printer className="size-3.5" /> {t("print_slip")}
           </Button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
             {canDelete(role, record, assignedCountryIds) && (
               <Button
                 variant="destructive"
@@ -433,7 +436,7 @@ export function RecordDetailDialog({
                   onDelete(record);
                   onOpenChange(false);
                 }}
-                className="flex items-center gap-1.5"
+                className="flex items-center justify-center gap-1.5 w-full sm:w-auto h-10 sm:h-9 text-xs cursor-pointer"
               >
                 <Trash2 className="size-3.5" /> {t("delete")}
               </Button>
@@ -445,13 +448,13 @@ export function RecordDetailDialog({
                   onOpenChange(false);
                   onEdit(record);
                 }}
-                className="flex items-center gap-1.5"
+                className="flex items-center justify-center gap-1.5 w-full sm:w-auto h-10 sm:h-9 text-xs cursor-pointer"
               >
                 <Pencil className="size-3.5" /> {t("edit_record")}
               </Button>
             )}
             {isReadOnly(role) && (
-              <span className="text-[11px] text-muted-foreground bg-muted px-2.5 py-1 rounded border">
+              <span className="text-[11px] text-muted-foreground bg-muted px-2.5 py-1 rounded border text-center w-full sm:w-auto">
                 {t("role_read_only")}
               </span>
             )}

@@ -69,9 +69,9 @@ export function DashboardMetrics({
           <Layers className="size-4 text-muted-foreground group-hover:text-primary transition-colors" />
         </div>
         <div className="mt-2 text-2xl font-bold tracking-tight">{totalCount}</div>
-        <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
-          <span>{t("kpi_contract_val")}</span>
-          <span className="font-mono font-medium text-foreground">
+        <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] sm:text-[11px] text-muted-foreground">
+          <span className="truncate">{t("kpi_contract_val")}</span>
+          <span className="font-mono font-medium text-foreground shrink-0">
             {totalAmount.toLocaleString()} {t("currency_sar")}
           </span>
         </div>
@@ -95,9 +95,9 @@ export function DashboardMetrics({
         <div className="mt-2 text-2xl font-bold tracking-tight text-[#92400E] dark:text-[#FDE68A]">
           {visaStampedRecords.length}
         </div>
-        <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
-          <span>{t("col_visa_status")}</span>
-          <span className="font-mono font-medium text-foreground">
+        <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] sm:text-[11px] text-muted-foreground">
+          <span className="truncate">{t("col_visa_status")}</span>
+          <span className="font-mono font-medium text-foreground shrink-0">
             {records.filter((r) => r.medical === "FIT").length} {t("med_FIT")}
           </span>
         </div>
@@ -121,9 +121,9 @@ export function DashboardMetrics({
         <div className="mt-2 text-2xl font-bold tracking-tight text-[#166534] dark:text-[#86EFAC]">
           {tribRecords.length}
         </div>
-        <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
-          <span>{t("kpi_flight_ready")}</span>
-          <span className="font-mono font-medium text-foreground">
+        <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] sm:text-[11px] text-muted-foreground">
+          <span className="truncate">{t("kpi_flight_ready")}</span>
+          <span className="font-mono font-medium text-foreground shrink-0">
             {records.filter((r) => !!r.reserved).length} {t("kpi_booked")}
           </span>
         </div>
@@ -147,9 +147,9 @@ export function DashboardMetrics({
         <div className="mt-2 text-2xl font-bold tracking-tight text-[#1E40AF] dark:text-[#93C5FD]">
           {paidCount}
         </div>
-        <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
-          <span>{t("kpi_collected")}</span>
-          <span className="font-mono font-medium text-foreground">
+        <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] sm:text-[11px] text-muted-foreground">
+          <span className="truncate">{t("kpi_collected")}</span>
+          <span className="font-mono font-medium text-foreground shrink-0">
             {paidAmount.toLocaleString()} {t("currency_sar")}
           </span>
         </div>
@@ -173,9 +173,9 @@ export function DashboardMetrics({
         <div className="mt-2 text-2xl font-bold tracking-tight text-[#155E75] dark:text-[#A5F3FC]">
           {pendingCount}
         </div>
-        <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
-          <span>{t("kpi_outstanding")}</span>
-          <span className="font-mono font-medium text-foreground">
+        <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] sm:text-[11px] text-muted-foreground">
+          <span className="truncate">{t("kpi_outstanding")}</span>
+          <span className="font-mono font-medium text-foreground shrink-0">
             {pendingAmount.toLocaleString()} {t("currency_sar")}
           </span>
         </div>
@@ -199,9 +199,9 @@ export function DashboardMetrics({
         <div className="mt-2 text-2xl font-bold tracking-tight text-[#991B1B] dark:text-[#FCA5A5]">
           {canceledRecords.length}
         </div>
-        <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
-          <span>{t("col_visa_status")}</span>
-          <span className="font-mono font-medium text-foreground">
+        <div className="mt-1 flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 text-[10px] sm:text-[11px] text-muted-foreground">
+          <span className="truncate">{t("col_visa_status")}</span>
+          <span className="font-mono font-medium text-foreground shrink-0">
             {canceledRecords.length > 0 ? `${canceledRecords.length} ${t("records_count")}` : "0"}
           </span>
         </div>

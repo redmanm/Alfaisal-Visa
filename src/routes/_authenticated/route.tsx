@@ -274,7 +274,7 @@ function Layout() {
           onClick={() => setMobileMenuOpen(false)}
         >
           <div
-            className="absolute top-0 bottom-0 rtl:right-0 rtl:left-auto ltr:left-0 ltr:right-auto w-[280px] bg-sidebar p-4 text-sidebar-foreground shadow-2xl flex flex-col justify-between"
+            className="absolute top-0 bottom-0 rtl:right-0 rtl:left-auto ltr:left-0 ltr:right-auto w-[min(300px,85vw)] bg-sidebar p-4 text-sidebar-foreground shadow-2xl flex flex-col justify-between overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div>
@@ -500,7 +500,7 @@ function Layout() {
       </aside>
 
       {/* 4. Main Page View - Expands to 100% width */}
-      <main className="min-w-0 flex-1 bg-background pb-16 md:pb-6 transition-all duration-200 w-full overflow-x-hidden">
+      <main className="min-w-0 flex-1 bg-background pb-20 md:pb-6 transition-all duration-200 w-full overflow-x-hidden">
         <Outlet />
       </main>
 
