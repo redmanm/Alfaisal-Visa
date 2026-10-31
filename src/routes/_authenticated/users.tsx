@@ -237,7 +237,7 @@ function UsersPage() {
   const staffCount = userList.filter((u) => u.role === "STAFF").length;
 
   return (
-    <div className="space-y-5 px-2 sm:px-4 md:px-6 py-3 sm:py-4 max-w-7xl mx-auto w-full">
+    <div className="space-y-5 px-2 sm:px-3 py-3 w-full">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-4">
         <div>

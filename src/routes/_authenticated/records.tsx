@@ -425,7 +425,7 @@ function RecordsPage() {
     "h-9 rounded-md border border-input bg-background px-2.5 text-xs focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
 
   return (
-    <div className="space-y-4 px-2 sm:px-4 md:px-6 py-3 sm:py-4 max-w-7xl mx-auto w-full">
+    <div className="space-y-4 px-2 sm:px-3 py-3 w-full">
       {/* Top Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b pb-4">
         <div className="flex items-center gap-3">
