@@ -2,11 +2,18 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
-import { ShieldCheck, Shield, User, Sparkles, Copy, Check, Languages } from "lucide-react";
+import {
+  User,
+  Lock,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  ShieldAlert,
+  UserCheck,
+  Languages,
+} from "lucide-react";
 import { neonAuth } from "@/lib/neon-client";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { normalizeRole } from "@/lib/records";
 import { useI18n } from "@/lib/i18n";
 
@@ -32,8 +39,8 @@ export const Route = createFileRoute("/auth")({
 });
 
 const schema = z.object({
-  email: z.string().trim().email("Enter a valid email").max(255),
-  password: z.string().min(8, "At least 8 characters").max(72),
+  username: z.string().trim().min(2, "Enter a valid username or email").max(255),
+  password: z.string().min(6, "At least 6 characters").max(72),
 });
 
 export const DEMO_ACCOUNTS_DATA = [
@@ -98,13 +105,13 @@ export const DEMO_ACCOUNTS_DATA = [
 
 function AuthPage() {
   const navigate = useNavigate();
-  const { t, isAr, lang, toggleLang } = useI18n();
+  const { t, isAr, toggleLang } = useI18n();
   const [mode, setMode] = useState<"in" | "up">("in");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   useEffect(() => {
     const handleRedirect = (
@@ -122,21 +129,30 @@ function AuthPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const parsed = schema.safeParse({ email, password });
+    const parsed = schema.safeParse({ username, password });
     if (!parsed.success) {
       toast.error(t("auth_invalid_input"));
       return;
     }
+
+    const resolvedEmail = username.trim().includes("@")
+      ? username.trim()
+      : `${username.trim().toLowerCase()}@falfaisal.com`;
+
     setBusy(true);
     try {
       if (mode === "in") {
-        const { error } = await neonAuth.signInWithPassword(parsed.data);
+        const { error } = await neonAuth.signInWithPassword({
+          email: resolvedEmail,
+          password: parsed.data.password,
+        });
         if (error) throw error;
         toast.success(t("auth_welcome_back"));
       } else {
         const { data, error } = await neonAuth.signUp({
-          ...parsed.data,
-          options: { data: { full_name: name.trim() } },
+          email: resolvedEmail,
+          password: parsed.data.password,
+          options: { data: { full_name: fullName.trim() || username.trim() } },
         });
         if (error) throw error;
         if (!data.session) {
@@ -155,9 +171,9 @@ function AuthPage() {
   // Quick Sign In for Demo Accounts
   async function handleDemoLogin(account: (typeof DEMO_ACCOUNTS_DATA)[number]) {
     setBusy(true);
-    setEmail(account.email);
+    setUsername(account.email);
     setPassword(account.password);
-    setName(isAr ? account.name_ar : account.name_en);
+    setFullName(isAr ? account.name_ar : account.name_en);
     try {
       // First attempt sign-in
       const { data: signInData, error: signInErr } = await neonAuth.signInWithPassword({
@@ -167,11 +183,14 @@ function AuthPage() {
 
       if (!signInErr && signInData.session) {
         toast.success(`${t("auth_welcome_back")} (${account.email})`);
-        navigate({ to: "/records", replace: true });
+        navigate({
+          to: account.role === "SUPER_ADMIN" ? "/executive" : "/records",
+          replace: true,
+        });
         return;
       }
 
-      // If user does not exist yet, create it automatically
+      // If user does not exist yet, auto-provision
       const { data: signUpData, error: signUpErr } = await neonAuth.signUp({
         email: account.email,
         password: account.password,
@@ -187,16 +206,21 @@ function AuthPage() {
 
       if (signUpData.session) {
         toast.success(`${t("auth_welcome_back")} (${account.email})`);
-        navigate({ to: "/records", replace: true });
+        navigate({
+          to: account.role === "SUPER_ADMIN" ? "/executive" : "/records",
+          replace: true,
+        });
       } else {
-        // Retry sign in
         const retry = await neonAuth.signInWithPassword({
           email: account.email,
           password: account.password,
         });
         if (retry.error) throw retry.error;
         toast.success(`${t("auth_welcome_back")} (${account.email})`);
-        navigate({ to: "/records", replace: true });
+        navigate({
+          to: account.role === "SUPER_ADMIN" ? "/executive" : "/records",
+          replace: true,
+        });
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Sign-in failed");
@@ -205,254 +229,176 @@ function AuthPage() {
     }
   }
 
-  const copyCreds = (val: string, key: string, label: string) => {
-    navigator.clipboard.writeText(val);
-    setCopiedKey(key);
-    toast.success(`${t("copied")}: ${label}`);
-    setTimeout(() => setCopiedKey(null), 1500);
-  };
-
   return (
-    <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 relative bg-background">
+    <div className="min-h-screen w-full flex flex-col lg:flex-row relative overflow-hidden bg-[#F0F4F7]">
       {/* Top Floating Language Switcher */}
-      <div className="absolute top-4 rtl:left-4 ltr:right-4 z-50">
+      <div className="absolute top-4 start-4 z-40">
         <Button
           variant="outline"
           size="sm"
           onClick={toggleLang}
-          className="h-8 px-3 text-xs gap-1.5 shadow-xs bg-card/80 backdrop-blur-xs hover:bg-accent"
+          className="h-8 px-3 rounded-full text-xs font-medium gap-1.5 shadow-xs bg-white/90 hover:bg-white text-slate-700 backdrop-blur-md border border-slate-200/90 transition-all cursor-pointer"
         >
-          <Languages className="size-3.5 text-primary" />
+          <Languages className="size-3.5 text-[#0F765E]" />
           <span className="font-semibold">{t("lang_switch_label")}</span>
         </Button>
       </div>
 
-      {/* Left Marketing & Brand Showcase */}
-      <div className="hidden lg:flex flex-col justify-between p-10 bg-sidebar text-sidebar-foreground border-e border-sidebar-border relative overflow-hidden">
-        <div className="flex items-center gap-3 font-semibold tracking-tight">
-          <img
-            src="/logo.png"
-            alt="Fan AlFaisal Logo"
-            className="size-12 rounded-xl bg-white object-contain p-1 shadow-md"
-          />
-          <div>
-            <div className="font-arabic text-base font-bold text-sidebar-foreground">
-              {t("company_name")}
-            </div>
-            <div className="text-xs text-sidebar-foreground/75 font-normal tracking-wide">
-              {t("company_subtitle")}
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-md space-y-6">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xs">
-            <img
-              src="/logo.png"
-              alt="Fan AlFaisal"
-              className="mx-auto mb-4 size-28 rounded-2xl bg-white object-contain p-2 shadow-lg"
-            />
-            <h1 className="text-center font-arabic text-2xl font-bold leading-snug">
-              {t("auth_platform_title")}
-            </h1>
-            <p className="mt-2 text-center text-xs opacity-75 leading-relaxed">
-              {t("auth_platform_desc")}
-            </p>
-          </div>
-
-          <div className="space-y-2 text-xs opacity-80">
-            <div className="flex items-center gap-2">
-              <span className="size-1.5 rounded-full bg-st-teal" />
-              <span>{t("auth_bullet_1")}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="size-1.5 rounded-full bg-st-green" />
-              <span>{t("auth_bullet_2")}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="size-1.5 rounded-full bg-primary" />
-              <span>{t("auth_bullet_3")}</span>
-            </div>
-          </div>
-        </div>
-
-        <p className="flex items-center gap-2 text-xs opacity-60">
-          <ShieldCheck className="size-4" /> {t("auth_secure_badge")}
-        </p>
+      {/* Mobile Subtle Background Image */}
+      <div
+        className="lg:hidden absolute inset-0 bg-cover bg-center bg-no-repeat -z-10"
+        style={{ backgroundImage: "url('/login-hero.jpg')" }}
+      >
+        <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-xs" />
       </div>
 
-      {/* Right Login & Demo Form */}
-      <div className="flex flex-col items-center justify-center p-6 sm:p-10">
-        <div className="w-full max-w-sm space-y-5">
-          {/* Logo on small screens */}
-          <div className="text-center lg:hidden">
+      {/* 1. Left Side: Centered Login Card (~40-45% Desktop Width) */}
+      <div className="w-full lg:w-[45%] xl:w-[42%] min-h-screen flex flex-col justify-center items-center p-4 sm:p-8 z-10">
+        <div className="w-full max-w-[380px] sm:max-w-[400px] rounded-3xl bg-white p-7 sm:p-9 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-white/80 transition-all">
+          {/* Company Official Logo */}
+          <div className="flex justify-center mb-1">
             <img
               src="/logo.png"
               alt="Fan AlFaisal Logo"
-              className="mx-auto mb-2 size-16 rounded-xl bg-white object-contain p-1 shadow-xs border"
+              className="h-20 sm:h-24 w-auto object-contain select-none"
             />
-            <h2 className="font-arabic text-lg font-bold">{t("company_name")}</h2>
-            <p className="text-xs text-muted-foreground">{t("company_subtitle")}</p>
           </div>
 
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">
-              {mode === "in" ? t("auth_title_signin") : t("auth_title_signup")}
-            </h2>
-            <p className="text-xs text-muted-foreground mt-1">
-              {mode === "in" ? t("auth_subtitle_signin") : t("auth_subtitle_signup")}
-            </p>
-          </div>
+          {/* Portal Title */}
+          <h1 className="text-center text-xl sm:text-[22px] font-bold text-slate-800 tracking-tight mt-2 mb-6 font-arabic">
+            {t("auth_portal_title") || "Visa Processing Portal"}
+          </h1>
 
-          {/* Quick Demo Login Box */}
-          <div className="rounded-xl border border-primary/20 bg-primary/5 p-3.5 space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5 text-xs font-bold text-primary">
-                <Sparkles className="size-3.5" /> {t("auth_demo_box")}
-              </span>
-              <span className="text-[10px] text-muted-foreground uppercase font-mono">
-                {t("auth_demo_click")}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {DEMO_ACCOUNTS_DATA.map((acc, idx) => (
-                <Button
-                  key={acc.email}
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  disabled={busy}
-                  onClick={() => handleDemoLogin(acc)}
-                  className={`h-auto flex flex-col items-start p-2.5 text-left rtl:text-right transition-all ${
-                    idx === 0
-                      ? "border-amber-500/40 hover:border-amber-500 hover:bg-amber-500/10"
-                      : idx === 1 || idx === 2
-                        ? "border-blue-500/40 hover:border-blue-500 hover:bg-blue-500/10"
-                        : "border-emerald-500/40 hover:border-emerald-500 hover:bg-emerald-500/10"
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5 w-full justify-between">
-                    <span className="flex items-center gap-1 font-semibold text-xs text-foreground truncate">
-                      {idx === 0 ? (
-                        <Shield className="size-3 text-amber-500 shrink-0" />
-                      ) : idx === 1 || idx === 2 ? (
-                        <ShieldCheck className="size-3 text-blue-500 shrink-0" />
-                      ) : (
-                        <User className="size-3 text-emerald-500 shrink-0" />
-                      )}
-                      <span className="truncate">{isAr ? acc.badge_ar : acc.badge_en}</span>
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-muted-foreground mt-0.5 truncate w-full font-mono">
-                    {acc.email}
-                  </span>
-                  <span className="text-[9px] text-muted-foreground/80 line-clamp-1 mt-0.5 w-full">
-                    {isAr ? acc.description_ar : acc.description_en}
-                  </span>
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          {/* Standard Auth Form */}
+          {/* Form Inputs */}
           <form onSubmit={submit} className="space-y-4">
             {mode === "up" && (
-              <div className="space-y-1.5">
-                <Label htmlFor="name" className="text-xs">
-                  {t("auth_full_name")}
-                </Label>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  maxLength={100}
-                  className="h-9 text-xs"
+              <div className="relative flex items-center rounded-xl border border-slate-200 bg-white px-3.5 py-3 shadow-2xs transition-all duration-200 focus-within:border-[#0F765E] focus-within:ring-2 focus-within:ring-[#0F765E]/20">
+                <User className="size-4.5 text-slate-400 shrink-0 me-3" />
+                <input
+                  type="text"
+                  required
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder={t("auth_full_name") || "Full Name"}
+                  className="w-full bg-transparent text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none"
                 />
               </div>
             )}
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="email" className="text-xs">
-                  {t("auth_email")}
-                </Label>
-                {email && (
-                  <button
-                    type="button"
-                    onClick={() => copyCreds(email, "email", t("auth_email"))}
-                    className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-1"
-                  >
-                    {copiedKey === "email" ? (
-                      <Check className="size-3 text-st-green" />
-                    ) : (
-                      <Copy className="size-3" />
-                    )}
-                    {t("copy_label")}
-                  </button>
-                )}
-              </div>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                placeholder="name@falfaisal.com"
-                className="h-9 text-xs"
+            {/* Username Field */}
+            <div className="relative flex items-center rounded-xl border border-slate-200 bg-white px-3.5 py-3 shadow-2xs transition-all duration-200 focus-within:border-[#0F765E] focus-within:ring-2 focus-within:ring-[#0F765E]/20">
+              <User className="size-4.5 text-slate-400 shrink-0 me-3" />
+              <input
+                id="username"
+                name="username"
+                type="text"
+                autoComplete="username"
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder={t("auth_username_placeholder") || "Username"}
+                className="w-full bg-transparent text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none"
               />
             </div>
 
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password" className="text-xs">
-                  {t("auth_password")}
-                </Label>
-                {password && (
-                  <button
-                    type="button"
-                    onClick={() => copyCreds(password, "pass", t("auth_password"))}
-                    className="text-[10px] text-muted-foreground hover:text-foreground flex items-center gap-1"
-                  >
-                    {copiedKey === "pass" ? (
-                      <Check className="size-3 text-st-green" />
-                    ) : (
-                      <Copy className="size-3" />
-                    )}
-                    {t("copy_label")}
-                  </button>
-                )}
-              </div>
-              <Input
+            {/* Password Field */}
+            <div className="relative flex items-center rounded-xl border border-slate-200 bg-white px-3.5 py-3 shadow-2xs transition-all duration-200 focus-within:border-[#0F765E] focus-within:ring-2 focus-within:ring-[#0F765E]/20">
+              <Lock className="size-4.5 text-slate-400 shrink-0 me-3" />
+              <input
                 id="password"
-                type="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete={mode === "in" ? "current-password" : "new-password"}
+                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                autoComplete={mode === "in" ? "current-password" : "new-password"}
-                className="h-9 text-xs"
+                placeholder={t("auth_password_placeholder") || "Password"}
+                className="w-full bg-transparent text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none"
               />
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full h-9 text-xs font-semibold shadow-panel"
-              disabled={busy}
-            >
-              {busy ? t("saving") : mode === "in" ? t("auth_sign_in_btn") : t("auth_sign_up_btn")}
-            </Button>
-
-            <p className="text-center text-xs text-muted-foreground">
-              {mode === "in" ? t("auth_switch_to_up") : t("auth_switch_to_in")}{" "}
               <button
                 type="button"
-                className="font-semibold text-primary hover:underline"
-                onClick={() => setMode(mode === "in" ? "up" : "in")}
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-slate-400 hover:text-slate-600 focus:outline-none p-0.5 cursor-pointer"
+                tabIndex={-1}
+                title={showPassword ? "Hide password" : "Show password"}
               >
-                {mode === "in" ? t("auth_sign_up_btn") : t("auth_sign_in_btn")}
+                {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
-            </p>
+            </div>
+
+            {/* Sign In Button */}
+            <button
+              type="submit"
+              disabled={busy}
+              className="w-full rounded-xl bg-[#0F765E] hover:bg-[#0A5C48] active:bg-[#074737] text-white font-semibold py-3.5 text-sm sm:text-base transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+            >
+              {busy ? (
+                <div className="size-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              ) : (
+                t("auth_sign_in_btn") || "Sign In"
+              )}
+            </button>
+
+            {/* Quick Demo Logins Strip */}
+            <div className="pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-semibold text-slate-500">
+                  {t("auth_quick_roles") || "Quick Demo Logins"}
+                </span>
+                <span className="text-[10px] text-slate-400 font-mono">1-Click</span>
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                {DEMO_ACCOUNTS_DATA.map((acc, idx) => (
+                  <button
+                    key={acc.email}
+                    type="button"
+                    disabled={busy}
+                    onClick={() => handleDemoLogin(acc)}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200/90 bg-slate-50 hover:bg-emerald-50 hover:border-emerald-300 text-[11px] font-medium text-slate-700 transition-colors text-start cursor-pointer"
+                  >
+                    {idx === 0 ? (
+                      <ShieldCheck className="size-3 text-amber-500 shrink-0" />
+                    ) : idx === 1 || idx === 2 ? (
+                      <ShieldAlert className="size-3 text-blue-500 shrink-0" />
+                    ) : (
+                      <UserCheck className="size-3 text-emerald-600 shrink-0" />
+                    )}
+                    <span className="truncate">{isAr ? acc.badge_ar : acc.badge_en}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Mode switch */}
+            <div className="text-center pt-1">
+              <button
+                type="button"
+                onClick={() => setMode(mode === "in" ? "up" : "in")}
+                className="text-xs text-slate-500 hover:text-emerald-700 transition-colors cursor-pointer"
+              >
+                {mode === "in" ? t("auth_switch_to_up") : t("auth_switch_to_in")}
+              </button>
+            </div>
           </form>
         </div>
+
+        {/* Security badge beneath the card */}
+        <p className="mt-4 text-center text-xs text-slate-500/80 flex items-center justify-center gap-1.5">
+          <ShieldCheck className="size-3.5 text-emerald-600" />
+          <span>{t("auth_secure_badge")}</span>
+        </p>
+      </div>
+
+      {/* 2. Right Side: Brand Imagery & Corporate Storefront Banner (~55-60% Desktop Width) */}
+      <div className="hidden lg:relative lg:flex lg:w-[55%] xl:w-[58%] min-h-screen overflow-hidden bg-slate-900 select-none">
+        <img
+          src="/login-hero.jpg"
+          alt="Fan AlFaisal Recruitment Company Office and Van"
+          className="absolute inset-0 h-full w-full object-cover object-center"
+        />
+        {/* Subtle executive gradient overlay (emerald tint #065F46) keeping storefront & van clearly visible */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-[#064E3B]/35 via-transparent to-[#047857]/25 mix-blend-multiply pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/20 via-transparent to-transparent pointer-events-none" />
       </div>
     </div>
   );

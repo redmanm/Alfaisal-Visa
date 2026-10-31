@@ -426,6 +426,12 @@ export const translations = {
     form_success_create: "تمت إضافة المعاملة بنجاح",
 
     // Auth Page
+    auth_portal_title: "بوابة معالجة التأشيرات",
+    auth_username_label: "اسم المستخدم",
+    auth_username_placeholder: "Username",
+    auth_password_label: "كلمة المرور",
+    auth_password_placeholder: "Password",
+    auth_quick_roles: "حسابات تجريبية سريعة",
     auth_title_signin: "تسجيل الدخول",
     auth_title_signup: "إنشاء حساب جديد",
     auth_subtitle_signin: "أدخل بيانات حسابك أو اختر أحد حسابات التجربة أدناه للبدء فوراً.",
@@ -870,6 +876,12 @@ export const translations = {
     form_success_create: "Record created successfully",
 
     // Auth Page
+    auth_portal_title: "Visa Processing Portal",
+    auth_username_label: "Username",
+    auth_username_placeholder: "Username",
+    auth_password_label: "Password",
+    auth_password_placeholder: "Password",
+    auth_quick_roles: "Quick Demo Logins",
     auth_title_signin: "Sign In",
     auth_title_signup: "Create Account",
     auth_subtitle_signin:
